@@ -1,5 +1,5 @@
 # Chrono
-Super simple program to reccord a command execution time
+Super simple program to record a command execution time
 
 ```shell
 pierre@pinson:~/Desktop/chrono$ chrono ls
