@@ -14,8 +14,8 @@ clean:
 	rm -rf *.o chrono chronoquiet
 
 install: all
-	cp chrono /usr/local/bin
-	cp chronoquiet /usr/local/bin
+	cp -f chrono /usr/local/bin
+	cp -f chronoquiet /usr/local/bin
 
 uninstall:
 	rm -f /usr/local/bin/chrono
