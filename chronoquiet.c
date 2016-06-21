@@ -4,19 +4,22 @@
 #include <errno.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
 
 int main(int argc, char **argv)
 {
   struct timeval t1, t2;
   uint64_t ut1, ut2;
-  int r_val, i;
-  char buffer[1024];
+  int r_val, i, saved_stdout;
+  char buffer[1024], stdout_path[20];
   
   if(argc < 2)
   {
     fprintf(stderr, "Usage : %s <command>\n", argv[0]);
     exit(EXIT_FAILURE);
   }
+  
+  saved_stdout = dup(STDOUT_FILENO);
   
   buffer[0] = '\0';
   for(i=1; i<argc; i++)
@@ -25,7 +28,7 @@ int main(int argc, char **argv)
     strcat(buffer, " ");
   }
   
-  strcat(buffer, " &> /dev/null");
+  freopen("/dev/null", "w", stdout);
   
   if(gettimeofday(&t1, NULL))
   {
@@ -48,6 +51,9 @@ int main(int argc, char **argv)
   
   ut1 = (uint64_t)t1.tv_sec * 1000000LLU + (uint64_t)t1.tv_usec;
   ut2 = (uint64_t)t2.tv_sec * 1000000LLU + (uint64_t)t2.tv_usec;
+  
+  sprintf(stdout_path, "/dev/fd/%d", saved_stdout);
+  freopen(stdout_path, "w", stdout);
 
   printf("%lu\n", ut2-ut1);
   
