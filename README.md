@@ -1,5 +1,5 @@
 # Chrono
-Super simple program to record a command execution time. `chrono  is the base program`, and `chronoquiet` can be used to suppress the standard output of the measured command.
+Super simple program to record a command execution time. `chrono`  is the base program, and `chronoquiet` can be used to suppress the standard output of the measured command.
 
 ```shell
 pierre@bulbi:~/chrono$ chrono ls
