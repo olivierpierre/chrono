@@ -67,7 +67,8 @@ int main(int argc, char **argv)
 	
 	if(child_ret)
 	{
-		perror("ret child");
+		fprintf(stderr, "Error: child returned non zero exit status: %d\n", 
+                WEXITSTATUS(child_ret));
 		goto err_free;
 	}
 	

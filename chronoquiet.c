@@ -67,12 +67,12 @@ int main(int argc, char **argv)
 		goto err_free;
 	}
 	
-	if(child_ret)
-	{
-		perror("ret child");
-		goto err_free;
-	}
-	
+    if(child_ret)
+    {
+        fprintf(stderr, "Error: child returned non zero exit status: %d\n", 
+                WEXITSTATUS(child_ret));
+        goto err_free;           
+    }
   }
    
   ut1 = (uint64_t)t1.tv_sec * 1000000LLU + (uint64_t)t1.tv_usec;
