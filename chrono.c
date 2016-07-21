@@ -1,16 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
 
 int main(int argc, char **argv)
 {
   struct timeval t1, t2;
   uint64_t ut1, ut2;
-  int r_val, i;
-  char buffer[1024];
+  int i, ret, child_ret;
+  char **exec_line;
+  pid_t pid;
   
   if(argc < 2)
   {
@@ -18,12 +22,14 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
   
-  buffer[0] = '\0';
+  /* Create array for execv */
+  exec_line = (char **)malloc((argc) * sizeof(char *));
   for(i=1; i<argc; i++)
   {
-    strcat(buffer, argv[i]);
-    strcat(buffer, " ");
+	exec_line[i-1] = (char *)malloc((strlen(argv[i]) + 1) * sizeof(char));
+	strcpy(exec_line[i-1], argv[i]);
   }
+  exec_line[argc - 1] = NULL;
   
   if(gettimeofday(&t1, NULL))
   {
@@ -31,17 +37,40 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
   
-  r_val = system(buffer);
-  if(r_val == -1)
+  pid = vfork();
+  if(pid == -1)
   {
-    perror("system");
-    exit(EXIT_FAILURE);
+	perror("vfork");
+	goto err_free;
   }
-  
-  if(gettimeofday(&t2, NULL))
+  else if(pid == 0)
   {
-    perror("gettimeofday");
-    exit(EXIT_FAILURE);
+    execvp(exec_line[0], exec_line);
+    perror("child exec");
+	exit(EXIT_FAILURE);
+  }
+  else
+  { 
+    ret = waitpid(pid, &child_ret, 0);
+    
+    if(gettimeofday(&t2, NULL))
+    {
+      perror("gettimeofday");
+      goto err_free;
+    }
+    
+    if(ret == -1)
+    {
+		perror("waitpid");
+		goto err_free;
+	}
+	
+	if(child_ret)
+	{
+		perror("ret child");
+		goto err_free;
+	}
+	
   }
   
   ut1 = (uint64_t)t1.tv_sec * 1000000LLU + (uint64_t)t1.tv_usec;
@@ -49,5 +78,14 @@ int main(int argc, char **argv)
 
   printf("%lu\n", ut2-ut1);
   
+  for(i=0; i<(argc-1); i++)
+    free(exec_line[i]);
+  
   return EXIT_SUCCESS;
+  
+err_free:
+  for(i=0; i<(argc-1); i++)
+    free(exec_line[i]);
+  free(exec_line);
+  return EXIT_FAILURE;
 }
