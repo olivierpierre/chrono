@@ -77,7 +77,7 @@ int main(int argc, char **argv)
   ut1 = (uint64_t)t1.tv_sec * 1000000LLU + (uint64_t)t1.tv_usec;
   ut2 = (uint64_t)t2.tv_sec * 1000000LLU + (uint64_t)t2.tv_usec;
 
-  printf("%lu\n", ut2-ut1);
+  printf("chrono: %lu\n", ut2-ut1);
   
   for(i=0; i<(argc-1); i++)
     free(exec_line[i]);
