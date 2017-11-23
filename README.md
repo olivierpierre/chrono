@@ -1,6 +1,8 @@
 # Chrono
 Super simple program to record a command execution time. `chrono`  is the base program, and `chronoquiet` can be used to suppress the standard output of the measured command.
 
+Results are gathered with the `gettimeofday` system call and given in microseconds.
+
 ```shell
 pierre@bulbi:~/chrono$ chrono ls
 chrono	chrono.c  chrono.out  chronoquiet  chronoquiet.c  Makefile  README.md
